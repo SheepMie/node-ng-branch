@@ -107,6 +107,7 @@
       $scope.islogin = false;
       $scope.istitle = false;
       $scope.isnamed = true;
+      $scope.createnamed = "";
       $scope.signup = function(){
       	
       	var data = {
@@ -117,7 +118,7 @@
 	      };
 	      $http({
 			    method: 'POST',
-			    url: 'http://127.0.0.1:3000/signup',
+			    url: 'http://127.0.0.1:3000/signup/passdata',
 			    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			    transformRequest:function(obj) {       //json化
 				      var str = [];
@@ -128,6 +129,8 @@
 			    data: data
 				}).success(function (response) {
 					if(response.success == 1){
+						
+						$scope.createnamed = response.name;
 						passimg();
 					}
 				});
@@ -141,7 +144,7 @@
       	formData.append('avatar', $scope.files[0],'image.png');
 	      $http({
 			    method: 'POST',
-			    url: 'http://127.0.0.1:3000/signup/passimg',
+			    url: 'http://127.0.0.1:3000/signup/passimg?name='+$scope.createnamed,
 			    headers: {'Content-Type': undefined},
 			    transformRequest:angular.identity,	//input序列化
 			    data: formData

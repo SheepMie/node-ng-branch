@@ -11,8 +11,8 @@ module.exports = function (app) {
     ); //设置响应头属性值
     next();
   });
-  app.use('/signup', require('./signup'));
-  app.use('/signin', require('./signin'));
-  app.use('/signout', require('./signout'));
-  app.use('/posts', require('./posts'));
+  app.use('/signup', require('../app/controllers/signup'));
+  app.use('/signin', require('../app/controllers/signin'));
+  app.use('/signout', require('../app/controllers/signout'));
+  app.use('/posts', require('../app/controllers/posts'));
 };

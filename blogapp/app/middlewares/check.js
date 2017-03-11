@@ -11,6 +11,7 @@ module.exports = {
     if (req.session.user) { //用户存在。。
       req.flash('error', '已登录');  //返回已登录的提示
       //return res.redirect('back'); //返回之前的页面
+      return;
     }
     next();
   }
