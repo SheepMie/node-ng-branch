@@ -11,6 +11,26 @@ router.get('/', checkNotLogin, function(req, res, next) {
   res.send(req.flash());
 });
 
+// GET /signup/hasnamed 检查是否有重命名
+router.get('/hasnamed', checkNotLogin, function(req, res, next) {
+  var name = req.query.name;
+  console.log(name);
+  UserModel.findOne({
+      name: name
+  }, function(error, doc) {
+      if (error) {
+        console.log("error :" + error);
+        return;
+      } else {
+        if(doc){
+          res.send({code:606,tip:"该用户名已注册"});
+        }else{
+          res.send({code:666,tip:"该用户名可注册"})
+        }
+      }
+  });
+});
+
 // POST /signup/passimg 用户头像上传
 router.post('/passimg', function(req, res, next) {
   var name = req.query.name;

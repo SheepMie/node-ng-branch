@@ -41,8 +41,8 @@
 	</div>
 	<div class="ui grid">
 	  <div class="four wide column"></div>
-	  <div class="eight wide column">
-
+	  <div class="eight wide column ">
+	  
 	    <div ng-if="istitle" class="ui success message">
 	      <p>尚未登陆</p>
 	    </div>
@@ -50,17 +50,17 @@
 	    <div ng-if="!istitle" class="ui error message">
 	      <p>登陆错误</p>
 	    </div>
-
+	  
 	  </div>
 	</div>
 	<div class="ui grid">
 	  <div class="four wide column"></div>
 	  <div class="eight wide column">
 	    <form class="ui form segment" >
-	      <div class="field required">
+	      <div class="field required" ng-class="{error:nameerror}">
 	        <label>用户名</label>
 	        <div class="ui icon input">
-	        	<input placeholder="用户名" type="text" ng-model="name">
+	        	<input id="aaa" placeholder="用户名" type="text" ng-model="name" ng-model-options="{ debounce: 600 }">
 	        	<i ng-if="isnamed" class="circular checkmark green  icon"></i>
 	        	<i ng-if="!isnamed" class="circular remove red  icon"></i>
 	        </div>
@@ -69,16 +69,16 @@
 	        <label>密码</label>
 	        <input placeholder="密码" type="password" ng-model="password">
 	      </div>
-	      <div class="field required">
+	      <div class="field required" ng-class="{error:passworderror}">
 	        <label>重复密码</label>
-	        <input placeholder="重复密码" type="password" ng-model="repassword">
+	        <input id="bbb" placeholder="重复密码" type="password" ng-model="repassword" ng-model-options="{ debounce: 600 }"  data-content="两次输入的密码不同">
 	      </div>
 	      <div class="field required">
 	        <label>性别</label>
 	        <select class="ui compact selection dropdown" ng-model="gender">
-	          <option value="m" selected="select">男</option>
+	          <option value="m" >男</option>
 	          <option value="f">女</option>
-	          <option value="x">保密</option>
+	          <option value="x" selected="selected">保密</option>
 	        </select>
 	      </div>
 	      <div class="field required">
@@ -89,7 +89,7 @@
 	        <label>个人简介</label>
 	        <textarea ng-model="bio" rows="5"></textarea>
 	      </div>
-	      <button class="ui button fluid" ng-click="signup()">注册</button>
+	      <button class="ui button fluid" ng-click="signup()" ng-disabled="isnamnameerrored||passworderror">注册</button>
 	    </div>
 	  </form>
 	</div>
@@ -101,13 +101,39 @@
 <script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
 <script src="js/style.js"></script>
 <script type="text/javascript">
+
 	var app = angular.module('myApp', []);
     app.controller('siteCtrl', function($scope, $http) {
       
       $scope.islogin = false;
       $scope.istitle = false;
-      $scope.isnamed = true;
       $scope.createnamed = "";
+      $scope.gender = "x"
+      $scope.$watch('name', function(newValue, oldValue) {
+          if (undefined !== $scope.name && "" !== $scope.name){
+            $http({
+					    method: 'GET',
+					    url: 'http://127.0.0.1:3000/signup/hasnamed',
+					    params: {name: $scope.name}
+						}).success(function (response) {
+							var code = response.code;
+							if(code == 606){
+								$scope.isnamed = false;
+								$scope.nameerror = true 
+							}else if(code == 666){
+								$scope.isnamed = true;
+								$scope.nameerror = false  
+							}
+						});
+          }
+      });
+      $scope.$watch('repassword', function() {
+          if ($scope.password != $scope.repassword){
+            $scope.passworderror = true      
+          }else{
+          	$scope.passworderror = false  
+          }
+      });
       $scope.signup = function(){
       	
       	var data = {
@@ -135,12 +161,12 @@
 					}
 				});
       };
-       $scope.fileChanged = function(ele){  
-          $scope.files = ele.files;  
-          $scope.$apply();  
+       $scope.fileChanged = function(ele){  //监听上传文件内容变化
+          $scope.files = ele.files;
+          $scope.$apply(); 
        };
       function passimg() {
-      	var formData = new FormData(); 
+      	var formData = new FormData();
       	formData.append('avatar', $scope.files[0],'image.png');
 	      $http({
 			    method: 'POST',
@@ -149,7 +175,9 @@
 			    transformRequest:angular.identity,	//input序列化
 			    data: formData
 				}).success(function (response) {});
-      };
+      }
     });
+    
+    
 </script>
 </html>
